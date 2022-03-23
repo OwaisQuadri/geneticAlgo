@@ -1,24 +1,22 @@
 from random import randint, uniform
-
 from typing import List
-
-import argparse 
-
 import time
 
 mutation_prob = 0.05
-#class for board
+# class for board
+
+
 class Board:
-    #constructor
+    # constructor
     def __init__(self, board: List[int] = None):
         self.prob = -1
-        self.board: List[int] = [randint(0,7) for _ in range(8)] if board is None else board.copy()
+        self.board: List[int] = [randint(0, 7) for _ in range(
+            8)] if board is None else board.copy()
         self.fit = self.calcFit()
-        
-    #calculate fitness for board
+
+    # calculate fitness for board
     def calcFit(self) -> float:
-        
-        
+
         sumFit = 0
 
         for i in range(7):
@@ -35,23 +33,26 @@ class Board:
             sumFit += currFit
 
         return sumFit
-    #create a copy of the board
+    # create a copy of the board
+
     def copy(self) -> 'Board':
         return Board(self.board)
-    #make a mutation by changing the position of thje queen
-    def mutate(self): 
+    # make a mutation by changing the position of thje queen
 
-        if mutation_prob > uniform(0,1):
+    def mutate(self):
+
+        if mutation_prob > uniform(0, 1):
             i = randint(0, 7)
-            v = randint(0,7)
+            v = randint(0, 7)
 
             while self.board[i] is v:
-                v = randint(0,7)
+                v = randint(0, 7)
 
             self.board[i] = v
-        
+
         # calculate new fitness value
         self.fit = self.calcFit()
+
 
 def roulette(brds: List[Board]):
 
@@ -64,16 +65,16 @@ def roulette(brds: List[Board]):
 
 
 def selectParents(boards: List[Board]) -> (Board, Board):
-    #randomly sel;ect parents
-    u1 = uniform(0,1)
-    u2 = uniform(0,1)
-   
+    # randomly sel;ect parents
+    u1 = uniform(0, 1)
+    u2 = uniform(0, 1)
+
     p1, p2 = None, None
     for board in boards:
         if board.prob > u1:
             p1 = board
             break
-    
+
     for board in boards:
         if board.prob > u2:
             p2 = board
@@ -81,12 +82,13 @@ def selectParents(boards: List[Board]) -> (Board, Board):
 
     return p1, p2
 
+
 def crossover(parent_1: Board, parent_2: Board) -> (Board, Board):
-    #clone/create braeakpoint at random
+    # clone/create braeakpoint at random
 
     c1, c2 = parent_1.copy(), parent_2.copy()
 
-    if 0.3 > uniform(0,1):
+    if 0.3 > uniform(0, 1):
         return c1, c2
 
     bp = randint(1, 6)
@@ -95,59 +97,66 @@ def crossover(parent_1: Board, parent_2: Board) -> (Board, Board):
 
     return c1, c2
 
+
 def new_population(n: int) -> List[Board]:
     return [Board() for _ in range(n)]
 
+
 if __name__ == '__main__':
 
-    x = 30 #population size
-    mutation_prob= .05 # mutation probability
-    num_solutions = 1 # number of solutions wanted
+    solutions = input("Enter the number of solutions to find: ")
 
-    sols = set()
-    
-    boards = new_population(x)
-    
+    population_size = 30  # population size
+    mutation_prob = 0.05  # mutation probability
+    num_solutions = int(solutions)  # number of solutions wanted
+
+    sol_set = set()
+
+    boards = new_population(population_size)
+
     generations = 0
 
-    if num_solutions != 1:
+    if num_solutions > 0 and num_solutions < 93:
         print(f"Solutions wanted: {num_solutions}")
+    else:
+        print('Failed: Can only find 1-92 soltutions for 8 queens!')
+        exit()
 
-    if mutation_prob != 0.01:
+    if mutation_prob != 0.05:
         print(f"Mutation probability: {mutation_prob}")
 
-    print(f"Population size: {x}")
+    print(f"Starting population size: {population_size}")
 
-    #start timer
+    # start timer
     start = time.time()
 
     while True:
-
         generations += 1
-        
-        sol = False
+
+        solution_found = False
         for board in boards:
             if board.fit == 0:
-                print( generations, "generations later: Solution: ", board.board)
-                sols.add(hash(tuple(board.board)))
-                sol = True
+                print(generations, "generations later: Solution: ",
+                      board.board, "\n")
+                sol_set.add(hash(tuple(board.board)))
+                solution_found = True
                 break
 
-        # reset if solution
-        if sol:
-            num_solutions = len(sols)
-            if num_solutions == num_solutions:
+        # get new population if solution found or stop loop if all solutions found
+        if solution_found:
+            cur_num_solutions = len(sol_set)
+            if cur_num_solutions == num_solutions:
                 break
 
-            print("Number of solutions:", num_solutions)
-            boards = new_population(x)
+            print("Current number of solutions:", cur_num_solutions)
+            boards = new_population(population_size)
             generations = 0
 
         roulette(boards)
 
         generation = []
 
-        for _ in range(int(x/2)):
+        for _ in range(int(population_size/2)):
             p1, p2 = selectParents(boards)
             c1, c2 = crossover(p1, p2)
 
@@ -159,8 +168,6 @@ if __name__ == '__main__':
 
         boards = generation
 
-    #end timer
-    total_time=time.time()-start
+    # end timer
+    total_time = time.time()-start
     print(f"Finished after {total_time} ms")
-
-
