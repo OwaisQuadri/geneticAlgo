@@ -3,6 +3,7 @@ from typing import List
 import time
 
 mutation_prob = 0.05
+
 # class for board
 
 
@@ -16,7 +17,6 @@ class Board:
 
     # calculate fitness for board
     def calcFit(self) -> float:
-
         sumFit = 0
 
         for i in range(7):
@@ -33,14 +33,13 @@ class Board:
             sumFit += currFit
 
         return sumFit
-    # create a copy of the board
 
+    # create a copy of the board
     def copy(self) -> 'Board':
         return Board(self.board)
+
     # make a mutation by changing the position of thje queen
-
     def mutate(self):
-
         if mutation_prob > uniform(0, 1):
             i = randint(0, 7)
             v = randint(0, 7)
@@ -55,7 +54,6 @@ class Board:
 
 
 def roulette(brds: List[Board]):
-
     total_fitness = sum(1 / board.fit for board in brds)
     offset = 0
 
@@ -136,8 +134,7 @@ if __name__ == '__main__':
         solution_found = False
         for board in boards:
             if board.fit == 0:
-                print(generations, "generations later: Solution: ",
-                      board.board, "\n")
+                print(generations, "generations later: Solution: ", board.board)
                 sol_set.add(hash(tuple(board.board)))
                 solution_found = True
                 break
@@ -146,6 +143,7 @@ if __name__ == '__main__':
         if solution_found:
             cur_num_solutions = len(sol_set)
             if cur_num_solutions == num_solutions:
+                print("Current number of solutions:", cur_num_solutions)
                 break
 
             print("Current number of solutions:", cur_num_solutions)
