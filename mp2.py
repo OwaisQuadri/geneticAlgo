@@ -3,6 +3,7 @@ from typing import List
 import time
 
 mutation_prob = 0.05
+n_queen = 8
 
 # class for board
 
@@ -11,19 +12,32 @@ class Board:
     # constructor
     def __init__(self, board: List[int] = None):
         self.prob = -1
-        self.board: List[int] = [randint(0, 7) for _ in range(
-            8)] if board is None else board.copy()
+        self.board: List[int] = self.init_chromosome(
+        ) if board is None else board.copy()
         self.fit = self.calcFit()
 
+    # build a chromosome where the index is the row and value is the column, there will be 0 column repeats
+    def init_chromosome(self) -> List[int]:
+        column_pool = [i for i in range(n_queen)]
+        chromosome = []
+
+        while len(column_pool) > 0:
+            i = randint(0, len(column_pool)-1)
+            chromosome.append(column_pool[i])
+            column_pool.pop(i)
+
+        return chromosome
+
     # calculate fitness for board
+
     def calcFit(self) -> float:
         sumFit = 0
 
-        for i in range(7):
+        for i in range(n_queen-1):
             q1 = self.board[i]
             currFit = 0
 
-            for j in range(i + 1, 8):
+            for j in range(i + 1, n_queen):
                 d = j - i
                 q2 = self.board[j]
 
@@ -38,14 +52,14 @@ class Board:
     def copy(self) -> 'Board':
         return Board(self.board)
 
-    # make a mutation by changing the position of thje queen
+    # make a mutation by changing the position of the queen
     def mutate(self):
         if mutation_prob > uniform(0, 1):
-            i = randint(0, 7)
-            v = randint(0, 7)
+            i = randint(0, n_queen-1)
+            v = randint(0, n_queen-1)
 
             while self.board[i] is v:
-                v = randint(0, 7)
+                v = randint(0, n_queen-1)
 
             self.board[i] = v
 
