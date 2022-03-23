@@ -2,7 +2,7 @@ from random import randint, uniform
 from typing import List
 import time
 
-mutation_prob = 0.05
+mutation_prob = 0.1
 n_queen = 8
 
 # class for board
@@ -68,11 +68,20 @@ class Board:
 
 
 def roulette(brds: List[Board]):
-    total_fitness = sum(1 / board.fit for board in brds)
     offset = 0
+    total_fitness = 0  # sum(1 / board.fit for board in brds)
+    for board in brds:
+        if board.fit == 0:
+            total_fitness += 1
+        else:
+            total_fitness += 1/board.fit
 
     for board in brds:
-        board.prob = offset + 1 / board.fit / total_fitness
+        if board.fit == 0:
+            board.prob = offset + 1 / total_fitness
+        else:
+            board.prob = offset + 1 / board.fit / total_fitness
+
         offset = board.prob
 
 
@@ -118,8 +127,8 @@ if __name__ == '__main__':
 
     solutions = input("Enter the number of solutions to find: ")
 
-    population_size = 30  # population size
-    mutation_prob = 0.05  # mutation probability
+    population_size = 100  # population size
+    mutation_prob = 0.1  # mutation probability
     num_solutions = int(solutions)  # number of solutions wanted
 
     sol_set = set()
@@ -134,7 +143,7 @@ if __name__ == '__main__':
         print('Failed: Can only find 1-92 soltutions for 8 queens!')
         exit()
 
-    if mutation_prob != 0.05:
+    if mutation_prob != 0.1:
         print(f"Mutation probability: {mutation_prob}")
 
     print(f"Starting population size: {population_size}")
