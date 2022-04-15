@@ -127,8 +127,8 @@ if __name__ == '__main__':
 
     solutions = input("Enter the number of solutions to find: ")
 
-    population_size = 100  # population size
-    mutation_prob = 0.1  # mutation probability
+    population_size = 2000  # population size
+    mutation_prob = 0.15  # mutation probability
     num_solutions = int(solutions)  # number of solutions wanted
 
     sol_set = set()
